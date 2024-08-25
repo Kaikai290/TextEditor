@@ -3,21 +3,26 @@
 #include "../include/GLFW/glfw3.h"
 #include "../include/GLFW/glfw3native.h"
 
-#include "KeyboardInput.h"
-#include "ShaderManager.h"
+#include "keyboard_input.h"
+#include "shader_manager.h"
+#include "render.h"
 
-void mainLoop(GLFWwindow* window, unsigned int shaderProgram, unsigned int VAO);
+struct Globals
+{
+    Render Renderer;
+    GLFWwindow* Window;
+};
+
+
+void mainLoop(Globals Global);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-static float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-};  
+
 
 int main()
 {
-    GLFWwindow* window;
+    Globals Global;
+    
 
     /* Initialize the library */
     if (!glfwInit())
@@ -27,15 +32,15 @@ int main()
     }
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
+    Global.Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    if (!Global.Window)
     {
         glfwTerminate();
         return -1;
     }
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(Global.Window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -45,51 +50,38 @@ int main()
 
     /* Turn on keyboard CallBack */
 
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(Global.Window, key_callback);
 
     /*Gen Shaders*/
     
-    ShaderManager Shader;
-    Shader.CreateShader();
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
+    
+    Global.Renderer.TextRenderInit();
 
 
-    /*set up VBO/VAO*/
-
-    unsigned int VAO, VBO;
-    glGenVertexArrays(1, &VAO);  
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    // 0. copy our vertices array in a buffer for OpenGL to use
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // 1. then set the vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);  
-    // 2. use our shader program when we want to render an object
-    glUseProgram(Shader.shaderProgram);
-    // 3. now draw the object 
 
     /* Loop until the user closes the window */
-    mainLoop(window, Shader.shaderProgram, VAO);
+    mainLoop(Global);
 
     glfwTerminate();
     return 0;
 }
 
-void mainLoop(GLFWwindow* window, unsigned int shaderProgram, unsigned int VAO)
+void mainLoop(Globals Global)
 {
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(Global.Window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+        Global.Renderer.TextShader.UseShader();
+        glBindVertexArray(Global.Renderer.TextVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(Global.Window);
 
         /* Poll for and process events */
         glfwPollEvents();
