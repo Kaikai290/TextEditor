@@ -4,7 +4,7 @@
 #include "../include/GLFW/glfw3native.h"
 
 #include "KeyboardInput.h"
-#include "ShaderManager.cpp"
+#include "ShaderManager.h"
 
 void mainLoop(GLFWwindow* window, unsigned int shaderProgram, unsigned int VAO);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
