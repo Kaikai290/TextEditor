@@ -6,23 +6,27 @@
 #include "keyboard_input.h"
 #include "shader_manager.h"
 #include "render.h"
+#include "text_memory.h"
+#include "callback_function.h"
+
+void character_callback(GLFWwindow* window, unsigned int codepoint);
 
 struct Globals
 {
     Render Renderer;
     GLFWwindow* Window;
+    TextMemory TextMemory;
 };
 
 
 void mainLoop(Globals Global);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void character_callback(GLFWwindow* window, unsigned int codepoint);
 
+static Globals Global;
 
 
 int main()
-{
-    Globals Global;
-    
+{  
 
     /* Initialize the library */
     if (!glfwInit())
@@ -50,7 +54,8 @@ int main()
 
     /* Turn on keyboard CallBack */
 
-    glfwSetKeyCallback(Global.Window, key_callback);
+    glfwSetCharCallback(Global.Window, character_callback);
+
 
     /*Gen Shaders*/
     
@@ -88,15 +93,11 @@ void mainLoop(Globals Global)
     }
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
-    // Save the states of the keys to allow for multiple button presses
-    // Forexample shift+letter for capital ect
-    // could look into modifier key flags the int mods
-    if (mods == 4)
-        {
-            std::cout <<  "caps" << std::endl;
-        }
-    const char CurrentKey = key;
-    std::cout <<  CurrentKey << " and " << action << " and " << mods << std::endl;
+    
+    char CurrentLetter = codepoint;
+    Global.TextMemory.AddChar(CurrentLetter);
+    std::cout << Global.TextMemory.Text << std::endl;
+
 }
