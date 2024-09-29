@@ -10,6 +10,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/glad.c)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_executable(TextEditor src/main.cpp src/glad.c src/shader_manager.cpp src/render.cpp src/callback_function.cpp src/text_memory.cpp)
+add_executable(TextEditor src/main.cpp src/glad.c src/shader_manager.cpp src/render.cpp src/text_memory.cpp src/text_editor.cpp src/sprite_manager.cpp src/stb_image.cpp)
 
 target_link_libraries(TextEditor ${CMAKE_SOURCE_DIR}/lib/glfw3dll.lib ${OPENGL_LIBRARIES})

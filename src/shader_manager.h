@@ -20,6 +20,7 @@ public:
     void CreateShader(std::string VertexFilePath, std::string FragmentFilePath);
     void UseShader();
     std::string LoadShaderFromFile(std::string FilePath);
+  void checkCompileErrors(unsigned int object, std::string type);
 };
 
 
